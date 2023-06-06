@@ -1,8 +1,16 @@
 const mongoose = require("mongoose");
+const moment = require("moment");
 
 const validateEmail = function (email) {
   const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   return regex.test(email);
+};
+
+const dateValidator = {
+  validator: function (dates) {
+    return dates.every(date => moment(date, "DD-MM-YYYY", true).isValid());
+  },
+  message: "Invalid date format",
 };
 
 const traineeSchema = new mongoose.Schema({
@@ -28,30 +36,11 @@ const traineeSchema = new mongoose.Schema({
   },
   leavesHalfDay: {
     type: [String],
-    validate: {
-      validator: function (value) {
-        const isValid = value.every((date) => {
-          const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
-          return dateRegex.test(date);
-        });
-        return isValid;
-      },
-      message: "Invalid date format",
-    },
-    
+    validate: [dateValidator],
   },
   leavesFullDay: {
     type: [Date],
-    validate: {
-      validator: function (value) {
-        const isValid = value.every((date) => {
-          const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
-          return dateRegex.test(date);
-        });
-        return isValid;
-      },
-      message: "Invalid date format",
-    },
+    validate: [dateValidator],
   },
 });
 
