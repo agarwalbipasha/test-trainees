@@ -21,7 +21,15 @@ database.once("connected", () => {
 });
 
 app.get("/", async (req, res) => {
+  const allTrainees = await Trainee.find({});
+  try {
+    res.json(allTrainees);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
+app.get("/trainees", async (req, res) => {
   try {
     const searchQuery = req.query.search;
     const conditions = {};
@@ -37,12 +45,6 @@ app.get("/", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-  // const allTrainees = await Trainee.find({});
-  // try {
-  //   res.json(allTrainees);
-  // } catch (error) {
-  //   res.status(500).json({ message: error.message });
-  // }
 });
 
 app.post("/", async (req, res) => {
@@ -51,7 +53,7 @@ app.post("/", async (req, res) => {
     id: req.body.id,
     email: req.body.email,
     leavesHalfDay: req.body.leavesHalfDay,
-    leavesFullDay: req.body.leavesFullDay
+    leavesFullDay: req.body.leavesFullDay,
   });
   try {
     const data = await newTrainee.save();
@@ -78,14 +80,18 @@ app.patch("/update/:id", async (req, res) => {
     name: req.body.name,
     id: req.body.id,
     email: req.body.email,
-  }
-
-  if (Array.isArray(req.body.leavesHalfDay)) {
-    updatedTrainee.$addToSet = {leavesHalfDay: {$each: req.body.leavesHalfDay}}
   };
 
+  if (Array.isArray(req.body.leavesHalfDay)) {
+    updatedTrainee.$addToSet = {
+      leavesHalfDay: { $each: req.body.leavesHalfDay },
+    };
+  }
+
   if (Array.isArray(req.body.leavesFullDay)) {
-    updatedTrainee.$addToSet = {leavesFullDay: {$each: req.body.leavesFullDay}}
+    updatedTrainee.$addToSet = {
+      leavesFullDay: { $each: req.body.leavesFullDay },
+    };
   }
 
   try {
