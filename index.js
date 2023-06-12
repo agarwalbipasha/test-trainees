@@ -21,12 +21,28 @@ database.once("connected", () => {
 });
 
 app.get("/", async (req, res) => {
-  const allTrainees = await Trainee.find({});
+
   try {
-    res.json(allTrainees);
+    const searchQuery = req.query.search;
+    const conditions = {};
+    if (searchQuery) {
+      conditions.$or = [
+        { name: { $regex: searchQuery, $options: "i" } },
+        { email: { $regex: searchQuery, $options: "i" } },
+      ];
+    }
+    const trainees = await Trainee.find(conditions);
+
+    res.json(trainees);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+  // const allTrainees = await Trainee.find({});
+  // try {
+  //   res.json(allTrainees);
+  // } catch (error) {
+  //   res.status(500).json({ message: error.message });
+  // }
 });
 
 app.post("/", async (req, res) => {
