@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const moment = require("moment");
+const Leave = require("./leave");
 
 const validateEmail = {
   validator: function (email) {
@@ -7,13 +7,6 @@ const validateEmail = {
     return regex.test(email);
   },
   message: "Please enter a valid email ID.",
-};
-
-const dateValidator = {
-  validator: function (dates) {
-    return dates.every((date) => moment(date, "DD-MM-YYYY", true).isValid());
-  },
-  message: "Invalid date format",
 };
 
 const traineeSchema = new mongoose.Schema({
@@ -40,14 +33,7 @@ const traineeSchema = new mongoose.Schema({
     lowercase: true,
     validate: [validateEmail],
   },
-  leavesHalfDay: {
-    type: [String],
-    validate: [dateValidator],
-  },
-  leavesFullDay: {
-    type: [String],
-    validate: [dateValidator],
-  },
+  leave: [Leave]
 });
 
 traineeSchema.pre("save", async function (next) {

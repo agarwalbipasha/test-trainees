@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const Trainee = require("./model");
+const Trainee = require("./models/trainee");
 const port = 3000;
 
 app.use(express.json());
@@ -52,8 +52,7 @@ app.post("/", async (req, res) => {
     name: req.body.name,
     id: req.body.id,
     email: req.body.email,
-    leavesHalfDay: req.body.leavesHalfDay,
-    leavesFullDay: req.body.leavesFullDay,
+    leave: req.body.leave,
   });
   try {
     const data = await newTrainee.save();
@@ -80,20 +79,10 @@ app.patch("/update/:id", async (req, res) => {
     name: req.body.name,
     id: req.body.id,
     email: req.body.email,
+    leave: req.body,leave
   };
 
-  if (Array.isArray(req.body.leavesHalfDay)) {
-    updatedTrainee.$addToSet = {
-      leavesHalfDay: { $each: req.body.leavesHalfDay },
-    };
-  }
-
-  if (Array.isArray(req.body.leavesFullDay)) {
-    updatedTrainee.$addToSet = {
-      leavesFullDay: { $each: req.body.leavesFullDay },
-    };
-  }
-
+  
   try {
     const result = await Trainee.findByIdAndUpdate(id, updatedTrainee);
     res.json(`Data updated successfully: ${result}`);
