@@ -33,7 +33,10 @@ const traineeSchema = new mongoose.Schema({
     lowercase: true,
     validate: [validateEmail],
   },
-  leave: [Leave]
+  leave: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Leave"
+  }
 });
 
 traineeSchema.pre("save", async function (next) {

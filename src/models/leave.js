@@ -35,12 +35,18 @@ const dateValidator = {
       required: true,
       trim: true,
       message: "Type can be either full day/half day."
-    }
+    },
+    reason: {
+        type: String,
+        required: true,
+        trim: true,
+        message: "Reason cannot be empty."
+      }
   });
 
 const Leave = mongoose.model("Leave", leaveSchema);
 
-module.exports = Leave;
+module.exports = "Leave";
 
   
   
