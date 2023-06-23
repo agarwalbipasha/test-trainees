@@ -62,10 +62,16 @@ exports.update = (req, res) => {
       name: req.body.name,
       id: req.body.id,
       email: req.body.email,
+      leave: req.body.leave
       };
   
-  Trainee.findByIdAndUpdate(id, updatedTrainee)
-  .then(data => res.status(200).send(`Data updated successfully: ${data}`))
+  Trainee.findByIdAndUpdate({ id: id }, { $push: { leave: updatedTrainee.leave } }, { new: true})
+  .then((trainee) => {
+    if (!trainee) {
+      return res.status(404).json({ message: "Trainee not found."});
+    }
+    res.json(trainee);
+  })
   .catch(err => 
     res.status(500).json({ 
         message: 
