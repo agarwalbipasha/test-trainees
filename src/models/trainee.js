@@ -11,7 +11,8 @@ const fromdateValidator = {
 const toDateValidator = {
   validator: function (value) {
     const fromDate = this.fromDate;
-    return moment(value, "DD-MM-YYYY").isSameOrAfter(moment(fromDate, "DD-MM-YYYY"))
+    return moment(value, "DD-MM-YYYY")
+    .isSameOrAfter(moment(fromDate, "DD-MM-YYYY"));
   },
   message: "ToDate should not be before FromDate."
 };
