@@ -1,21 +1,33 @@
 const db = require("../models");
 const Trainee = require("../models/trainee");
+const moment = require("moment");
 
 exports.create = (req, res) => {
-    const newTrainee = new Trainee({
-      name: req.body.name,
-      id: req.body.id,
-      email: req.body.email,
-      leave: req.body.leave,
-    });
-    newTrainee.save()
+  const { name, id, email, leave } = req.body;
+  const newLeave = leave.map((item) => ({
+    id: item.id,
+    fromDate: moment(item.fromDate, "DD-MM-YYYY").toDate(),
+    toDate: moment(item.toDate, "DD-MM-YYYY").toDate(),
+    type: item.type,
+    reason: item.reason
+  }));
+  const newTrainee = new Trainee({ name, id, email, leave: newLeave });
+  newTrainee.save()
     .then(data => {
-        res.send (data);
+      res.send(data);
     })
     .catch(err => {
-        res.status(500).send({
-            message: err.message || "Some error occured while creating the Trainee."
-        });
+      if(err && err.errors) {
+        const errors = Object.keys(err.errors)  
+        .map(key => err.errors[key].message);
+      res.status(500).send({
+        message: errors.length ? errors : "Some error occurred while creating the Trainee."
+      });
+    } else {
+      res.status(500).send({
+        message: err && err.message ? err.message: "Some error occured while creating the trainee."
+      });
+    }
     }); 
 };
 
@@ -58,14 +70,32 @@ exports.delete = (req, res) => {
 
 exports.update = (req, res) => {
     const id = req.params.id;
+    const updatedLeave = {
+      id: req.body.leave[0].id,
+      fromDate: moment(req.body.leave[0].fromDate, "DD-MM'YYYY").toDate(),
+      toDate: moment(req.body.leave[0].toDate, "DD-MM'YYYY").toDate(),
+      type: req.body.leave[0].type,
+      reason: req.body.leave[0].reason
+    };
     const updatedTrainee = {
       name: req.body.name,
       id: req.body.id,
       email: req.body.email,
-      leave: req.body.leave
+      leave: updatedLeave
       };
+
+      if (!updatedLeave.type || (updatedLeave.type != "full day" && updatedLeave.type != "half day")) {
+        return res.status(400).json({ message: "Please provide the valid leave type." });
+      }
+
+      if (!updatedLeave.reason) {
+        return res.status(400).json({ message: "Reason cannot be empty." });
+      }
   
-  Trainee.findByIdAndUpdate({ id: id }, { $push: { leave: updatedTrainee.leave } }, { new: true})
+  Trainee.findByIdAndUpdate(
+    { _id: id }, 
+    { $push: { leave: updatedLeave } }, 
+    { new: true})
   .then((trainee) => {
     if (!trainee) {
       return res.status(404).json({ message: "Trainee not found."});

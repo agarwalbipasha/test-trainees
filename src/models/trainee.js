@@ -1,19 +1,21 @@
 const mongoose = require("mongoose");
 const moment = require("moment");
 
-const dateValidator = {
+const fromdateValidator = {
     validator: function (date) {
       return moment(date, "DD-MM-YYYY", true).isValid();
     },
-    message: "Invalid date format",
+    message: (props) => `${props.value} is not a valid date`,
   };
 
-  function toDateValidator(value, context) {
-    if (value && context.fromDate) {
-      return value >= context.fromDate;
-    }
-    return true;
-  }
+const toDateValidator = {
+  validator: function (value) {
+    const fromDate = this.fromDate;
+    return moment(value, "DD-MM-YYYY").isSameOrAfter(moment(fromDate, "DD-MM-YYYY"))
+  },
+  message: "ToDate should not be before FromDate."
+};
+ 
 
 const validateEmail = {
   validator: function (email) {
@@ -34,28 +36,18 @@ const leaveSchema = new mongoose.Schema({
   fromDate: {
     type: Date,
     required: true,
-    trim: true,
-    // get: (value) => moment(value).format("DD MMMM YYYY"),
-    // set: (value) => moment(value, "DD MMMM YYYY").toDate(),
-    validate: [dateValidator],
+    validate: [fromdateValidator],
   },
   toDate: {
     type: Date,
     required: true,
-    trim: true,
-    // get: (value) => moment(value).format("DD MMMM YYYY"),
-    // set: (value) => moment(value, "DD MMMM YYYY").toDate(),
-    validate: {
-    validator: function (value) {
-      return moment(value, "DD MMMM YYYY", true).isValid() && value >= this.fromDate;
-    },
-    message: "ToDate should not be before FromDate."
-  },
+    validate: [toDateValidator]
 },
   type: {
     type: String,
     required: true,
     trim: true,
+    enum: ['full day', 'half day'],
     message: "Type can be either full day/half day."
   },
   reason: {
@@ -105,8 +97,6 @@ const traineeSchema = new mongoose.Schema({
 
 traineeSchema.pre("save", async function (next) {
   const trainee = this;
-  // const Model = mongoose.model("Trainee", traineeSchema);
-
   try {
     const model = mongoose.model("Trainee");
     const idCount = await model.countDocuments({ id: trainee.id });
