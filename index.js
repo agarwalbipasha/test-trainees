@@ -2,9 +2,14 @@ require('dotenv').config();
 
 const express = require("express");
 const app = express();
+const morgan = require('morgan');
 const port = process.env.PORT;
 
 app.use(express.json());
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+ 
+app.use(morgan('combined', { stream: accessLogStream }));
 
 const db = require("./src/models");
 
@@ -23,7 +28,7 @@ require("./src/routes/trainee.routes")(app);
 app.listen(port, () => {
   console.log("Server connected successfully");
 });
-// logging using morgan, winston
+// logging using morgan, winston - done using morgan
 // environment variables - done
 // async await - optional
 // validation of req body using joi or yup
