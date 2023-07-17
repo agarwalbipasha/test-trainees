@@ -15,6 +15,9 @@ app.use(morgan('combined', { stream: accessLogStream }));
 
 const db = require("./src/models");
 
+console.log(typeof db.url);
+
+
 db.mongoose.connect(db.url, {
   useNewUrlParser: true,
   useUnifiedTopology: true

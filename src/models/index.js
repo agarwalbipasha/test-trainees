@@ -1,4 +1,4 @@
-const dbConfig = process.env.URL;
+const dbConfig = process.env.DB_URL;
 
 const mongoose = require("mongoose");
 
