@@ -5,5 +5,23 @@
     "moment": "^2.29.4",
     "mongoose": "^7.2.2",
     "morgan": "^1.10.0"
-  }
+  },
+  "name": "test-trainees",
+  "version": "1.0.0",
+  "description": "\"Test trainees model\"",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agarwalbipasha/test-trainees.git"
+  },
+  "author": "Bipasha Agarwal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/agarwalbipasha/test-trainees/issues"
+  },
+  "homepage": "https://github.com/agarwalbipasha/test-trainees#readme"
 }
