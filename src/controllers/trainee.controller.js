@@ -32,7 +32,7 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  Trainee.find().then(data => res.send(data))
+  return Trainee.find().then(data => res.send(data))
     .catch(err => res.status(500).send({
       message: err.message || "Some error occured while retrieving trainees."
     }))
